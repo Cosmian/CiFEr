@@ -38,10 +38,18 @@ typedef struct cfe_mat cfe_mat;
 /**
  * Vector of arbitrary precision (GMP) integers.
  */
-typedef struct cfe_vec {
-    mpz_t *vec; /** A pointer to the first integer */
+typedef struct cfe_vec
+{
+    mpz_t *vec;  /** A pointer to the first integer */
     size_t size; /** The size of the vector */
 } cfe_vec;
+
+//////////////////////////////////////////////////
+
+cfe_vec *cfe_vec_allocate(void);
+void cfe_vec_deallocate(cfe_vec *vec);
+
+//////////////////////////////////////////////////
 
 /**
  * Initializes a vector.

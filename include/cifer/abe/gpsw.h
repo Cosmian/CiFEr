@@ -45,7 +45,8 @@
 /**
  * cfe_gpsw represents the GPSW scheme.
  */
-typedef struct cfe_gpsw {
+typedef struct cfe_gpsw
+{
     size_t l;
     mpz_t p;
 } cfe_gpsw;
@@ -53,7 +54,8 @@ typedef struct cfe_gpsw {
 /**
  * cfe_gpsw_pub_key represents the public key for the GPSW scheme.
  */
-typedef struct cfe_gpsw_pub_key {
+typedef struct cfe_gpsw_pub_key
+{
     cfe_vec_G2 t;
     FP12_BN254 y;
 } cfe_gpsw_pub_key;
@@ -61,7 +63,8 @@ typedef struct cfe_gpsw_pub_key {
 /**
  * cfe_gpsw_cipher represents the ciphertext structure for the GPSW scheme.
  */
-typedef struct cfe_gpsw_cipher {
+typedef struct cfe_gpsw_cipher
+{
     int *gamma;
     FP12_BN254 e0;
     cfe_vec_G2 e;
@@ -71,11 +74,22 @@ typedef struct cfe_gpsw_cipher {
  * cfe_gpsw_cipher represents the key structure with all the keys corresponding
  * owned attributes and is needed for the decryption in the GPSW scheme.
  */
-typedef struct cfe_gpsw_keys {
+typedef struct cfe_gpsw_keys
+{
     cfe_mat mat;
     cfe_vec_G1 d;
     int *row_to_attrib;
 } cfe_gpsw_keys;
+
+//////////////////////////////////////////////////
+
+cfe_gpsw *cfe_gpsw_allocate(void);
+void cfe_gpsw_deallocate(cfe_gpsw *gpsw);
+
+cfe_gpsw_pub_key *cfe_gpsw_pub_key_allocate(void);
+void cfe_gpsw_pub_key_deallocate(cfe_gpsw_pub_key *pub_key);
+
+//////////////////////////////////////////////////
 
 /**
  * Configures a new instance of the scheme.
