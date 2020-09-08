@@ -45,6 +45,15 @@ void cfe_gpsw_pub_key_deallocate(cfe_gpsw_pub_key *pub_key)
     free(pub_key);
 }
 
+cfe_gpsw_cipher *cfe_gpsw_cipher_allocate(void)
+{
+    return (struct cfe_gpsw_cipher *)malloc(sizeof(struct cfe_gpsw_cipher));
+}
+void cfe_gpsw_cipher_deallocate(cfe_gpsw_cipher *cipher)
+{
+    free(cipher);
+}
+
 FP12_BN254 *fp12_bn254_allocate(void)
 {
     return (FP12_BN254 *)malloc(sizeof(FP12_BN254));

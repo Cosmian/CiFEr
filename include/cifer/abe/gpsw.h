@@ -89,6 +89,9 @@ void cfe_gpsw_deallocate(cfe_gpsw *gpsw);
 cfe_gpsw_pub_key *cfe_gpsw_pub_key_allocate(void);
 void cfe_gpsw_pub_key_deallocate(cfe_gpsw_pub_key *pub_key);
 
+cfe_gpsw_cipher *cfe_gpsw_cipher_allocate(void);
+void cfe_gpsw_cipher_deallocate(cfe_gpsw_cipher *cipher);
+
 FP12_BN254 *fp12_bn254_allocate(void);
 void fp12_bn254_deallocate(FP12_BN254 *fp12_bn254);
 
