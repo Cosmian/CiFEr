@@ -95,6 +95,9 @@ void cfe_gpsw_cipher_deallocate(cfe_gpsw_cipher *cipher);
 FP12_BN254 *fp12_bn254_allocate(void);
 void fp12_bn254_deallocate(FP12_BN254 *fp12_bn254);
 
+cfe_msp *cfe_msp_allocate(void);
+void cfe_msp_deallocate(cfe_msp *msp);
+
 //////////////////////////////////////////////////
 
 /**

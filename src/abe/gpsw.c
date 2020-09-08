@@ -63,6 +63,14 @@ void fp12_bn254_deallocate(FP12_BN254 *fp12_bn254)
     free(fp12_bn254);
 }
 
+cfe_msp *cfe_msp_allocate(void)
+{
+    return (struct cfe_msp *)malloc(sizeof(struct cfe_msp));
+}
+void cfe_msp_deallocate(cfe_msp *msp)
+{
+    free(msp);
+}
 //////////////////////////////////////////////////
 
 void cfe_gpsw_init(cfe_gpsw *gpsw, size_t l)
