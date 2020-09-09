@@ -71,6 +71,25 @@ void cfe_msp_deallocate(cfe_msp *msp)
 {
     free(msp);
 }
+
+cfe_vec_G1 *cfe_vec_G1_allocate(void)
+{
+    return (struct cfe_vec_G1 *)malloc(sizeof(struct cfe_vec_G1));
+}
+void cfe_vec_G1_deallocate(cfe_vec_G1 *vec_g1)
+{
+    free(vec_g1);
+}
+
+cfe_gpsw_keys *cfe_gpsw_keys_allocate(void)
+{
+    return (struct cfe_gpsw_keys *)malloc(sizeof(struct cfe_gpsw_keys));
+}
+void cfe_gpsw_keys_deallocate(cfe_gpsw_keys *gpsw_keys)
+{
+    free(gpsw_keys);
+}
+
 //////////////////////////////////////////////////
 
 void cfe_gpsw_init(cfe_gpsw *gpsw, size_t l)

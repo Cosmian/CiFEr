@@ -98,6 +98,12 @@ void fp12_bn254_deallocate(FP12_BN254 *fp12_bn254);
 cfe_msp *cfe_msp_allocate(void);
 void cfe_msp_deallocate(cfe_msp *msp);
 
+cfe_vec_G1 *cfe_vec_G1_allocate(void);
+void cfe_vec_G1_deallocate(cfe_vec_G1 *vec_g1);
+
+cfe_gpsw_keys *cfe_gpsw_keys_allocate(void);
+void cfe_gpsw_keys_deallocate(cfe_gpsw_keys *gpsw_keys);
+
 //////////////////////////////////////////////////
 
 /**
