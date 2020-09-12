@@ -90,6 +90,39 @@ void cfe_gpsw_keys_deallocate(cfe_gpsw_keys *gpsw_keys)
     free(gpsw_keys);
 }
 
+BIG_256_56 *BIG_256_56_allocate(void)
+{
+    return malloc(sizeof(chunk) * NLEN_256_56);
+}
+void BIG_256_56_deallocate(BIG_256_56 *big)
+{
+    free(big);
+}
+
+void FP12_BN254_set_value(FP12_BN254 *fp12, char *be_bytes, size_t len)
+{
+    BIG_256_56 big;
+    BIG_256_56_fromBytesLen(big, be_bytes, len);
+    FP4_BN254 fp4;
+    FP2_BN254 fp2;
+    FP2_BN254_from_BIG(&fp2, big);
+    FP4_BN254_from_FP2(&fp4, &fp2);
+    FP12_BN254_from_FP4(fp12, &fp4);
+}
+
+size_t FP12_BN254_get_value_len(void)
+{
+    return MODBYTES_256_56;
+}
+
+void FP12_BN254_get_value(char *be_bytes, FP12_BN254 *fp12)
+{
+
+    BIG_256_56 big;
+    FP_BN254_redc(big, &(fp12->a.a.a));
+    BIG_256_56_toBytes(be_bytes, big);
+}
+
 //////////////////////////////////////////////////
 
 void cfe_gpsw_init(cfe_gpsw *gpsw, size_t l)
