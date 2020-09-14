@@ -25,7 +25,9 @@
 #include "cifer/abe/policy.h"
 #include "cifer/abe/gpsw.h"
 
-//////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////
+// This is added by Cosmian to ease integration with Python
+/////////////////////////////////////////////////////////////
 
 cfe_gpsw *cfe_gpsw_allocate(void)
 {
@@ -110,7 +112,7 @@ void FP12_BN254_set_value(FP12_BN254 *fp12, char *be_bytes, size_t len)
     FP12_BN254_from_FP4(fp12, &fp4);
 }
 
-size_t FP12_BN254_get_value_len(void)
+size_t FP12_BN254_value_size(void)
 {
     return MODBYTES_256_56;
 }
@@ -121,6 +123,37 @@ void FP12_BN254_get_value(char *be_bytes, FP12_BN254 *fp12)
     BIG_256_56 big;
     FP_BN254_redc(big, &(fp12->a.a.a));
     BIG_256_56_toBytes(be_bytes, big);
+}
+
+void FP12_BN254_order(char *be_bytes)
+{
+    BIG_256_56 order;
+    BIG_256_56_rcopy(order, CURVE_Order_BN254);
+    BIG_256_56_toBytes(be_bytes, order);
+}
+
+size_t cfe_gpsw_cipher_text_size(size_t num_attributes)
+{
+    return
+        // number of gamma elements
+        sizeof(int) * num_attributes +
+        // element e0
+        sizeof(FP12_BN254) +
+        // size of vec G2
+        sizeof(ECP2_BN254) * num_attributes;
+}
+
+size_t cfe_gpsw_delegate_keys_size(cfe_gpsw_keys *keys)
+{
+    printf("Keys: Rows: %ld, Cols: %ld, d size: %ld \n", keys->mat.rows, keys->mat.cols, keys->d.size);
+    return
+        // size of row_to_attrib
+        keys->mat.rows * sizeof(int) +
+        // d // vec_G1
+        keys->d.size * sizeof(ECP2_BN254) +
+        // mat
+        keys->mat.cols *
+            keys->mat.rows * sizeof(mpz_t);
 }
 
 //////////////////////////////////////////////////
@@ -294,6 +327,7 @@ cfe_error cfe_gpsw_decrypt(FP12_BN254 *res, cfe_gpsw_cipher *cipher, cfe_gpsw_ke
     cfe_mat_init(&mat_transpose, keys->mat.cols, keys->mat.rows);
     cfe_mat_transpose(&mat_transpose, &(keys->mat));
     cfe_error check = cfe_gaussian_elimination_solver(&alpha, &mat_transpose, &one_vec, gpsw->p);
+
     cfe_mat_free(&mat_transpose);
     cfe_vec_free(&one_vec);
     mpz_clear(one);
@@ -306,6 +340,8 @@ cfe_error cfe_gpsw_decrypt(FP12_BN254 *res, cfe_gpsw_cipher *cipher, cfe_gpsw_ke
 
     for (size_t i = 0; i < keys->mat.rows; i++)
     {
+        // BGR: guard against seg fault if positions[] is not assigned
+        positions[i] = cipher->e.size + 1;
         for (size_t j = 0; j < cipher->e.size; j++)
         {
             if (keys->row_to_attrib[i] == cipher->gamma[j])
@@ -324,6 +360,13 @@ cfe_error cfe_gpsw_decrypt(FP12_BN254 *res, cfe_gpsw_cipher *cipher, cfe_gpsw_ke
     BIG_256_56 alpha_i;
     for (size_t i = 0; i < keys->mat.rows; i++)
     {
+        // BGR: guard against seg fault if positions[] is not assigned
+        if (positions[i] >= cipher->e.size)
+        {
+            cfe_vec_free(&alpha);
+            free(positions);
+            return CFE_ERR_NO_SOLUTION_EXISTS;
+        }
         PAIR_BN254_ate(&pair, &(cipher->e.vec[positions[i]]), &(keys->d.vec[i]));
         PAIR_BN254_fexp(&pair);
         BIG_256_56_from_mpz(alpha_i, alpha.vec[i]);

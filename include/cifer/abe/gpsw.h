@@ -104,9 +104,14 @@ void cfe_vec_G1_deallocate(cfe_vec_G1 *vec_g1);
 cfe_gpsw_keys *cfe_gpsw_keys_allocate(void);
 void cfe_gpsw_keys_deallocate(cfe_gpsw_keys *gpsw_keys);
 
+void FP12_BN254_order(char *be_bytes);
+
+size_t FP12_BN254_value_size(void);
 void FP12_BN254_set_value(FP12_BN254 *fp12, char *be_bytes, size_t len);
-size_t FP12_BN254_get_value_len(void);
 void FP12_BN254_get_value(char *be_bytes, FP12_BN254 *fp12);
+
+size_t cfe_gpsw_cipher_text_size(size_t num_attributes);
+size_t cfe_gpsw_delegate_keys_size(cfe_gpsw_keys *keys);
 
 //////////////////////////////////////////////////
 
