@@ -328,6 +328,13 @@ cfe_error cfe_gpsw_decrypt(FP12_BN254 *res, cfe_gpsw_cipher *cipher, cfe_gpsw_ke
     cfe_mat_transpose(&mat_transpose, &(keys->mat));
     cfe_error check = cfe_gaussian_elimination_solver(&alpha, &mat_transpose, &one_vec, gpsw->p);
 
+    printf("    Alpha: (check = %d)", check);
+    for (size_t i = 0; i < alpha.size; i++)
+    {
+        gmp_printf(" %Zd ", alpha.vec[i]);
+    }
+    printf("\n");
+
     cfe_mat_free(&mat_transpose);
     cfe_vec_free(&one_vec);
     mpz_clear(one);
@@ -341,7 +348,7 @@ cfe_error cfe_gpsw_decrypt(FP12_BN254 *res, cfe_gpsw_cipher *cipher, cfe_gpsw_ke
     for (size_t i = 0; i < keys->mat.rows; i++)
     {
         // BGR: guard against seg fault if positions[] is not assigned
-        positions[i] = cipher->e.size + 1;
+        positions[i] = cipher->e.size; // this position cannot exist in the cipher
         for (size_t j = 0; j < cipher->e.size; j++)
         {
             if (keys->row_to_attrib[i] == cipher->gamma[j])
@@ -361,11 +368,11 @@ cfe_error cfe_gpsw_decrypt(FP12_BN254 *res, cfe_gpsw_cipher *cipher, cfe_gpsw_ke
     for (size_t i = 0; i < keys->mat.rows; i++)
     {
         // BGR: guard against seg fault if positions[] is not assigned
-        if (positions[i] >= cipher->e.size)
+        if (positions[i] == cipher->e.size)
         {
-            cfe_vec_free(&alpha);
-            free(positions);
-            return CFE_ERR_NO_SOLUTION_EXISTS;
+            // BGR: an attribute was provided as part of the key but
+            // does not exist in the cipher; ignore it
+            continue;
         }
         PAIR_BN254_ate(&pair, &(cipher->e.vec[positions[i]]), &(keys->d.vec[i]));
         PAIR_BN254_fexp(&pair);
@@ -380,6 +387,61 @@ cfe_error cfe_gpsw_decrypt(FP12_BN254 *res, cfe_gpsw_cipher *cipher, cfe_gpsw_ke
 
     return CFE_ERR_NONE;
 }
+
+// cfe_error cfe_gpsw_decrypt(FP12_BN254 *res, cfe_gpsw_cipher *cipher, cfe_gpsw_keys *keys, cfe_gpsw *gpsw)
+// {
+//     cfe_vec one_vec, alpha;
+//     mpz_t one;
+//     mpz_init_set_ui(one, 1);
+//     cfe_vec_init(&one_vec, keys->mat.cols);
+//     cfe_vec_set_const(&one_vec, one);
+//     cfe_mat mat_transpose;
+//     cfe_mat_init(&mat_transpose, keys->mat.cols, keys->mat.rows);
+//     cfe_mat_transpose(&mat_transpose, &(keys->mat));
+//     cfe_error check = cfe_gaussian_elimination_solver(&alpha, &mat_transpose, &one_vec, gpsw->p);
+//     cfe_mat_free(&mat_transpose);
+//     cfe_vec_free(&one_vec);
+//     mpz_clear(one);
+//     if (check)
+//     {
+//         return CFE_ERR_INSUFFICIENT_KEYS;
+//     }
+
+//     size_t *positions = (size_t *)cfe_malloc(sizeof(size_t) * keys->mat.rows);
+
+//     for (size_t i = 0; i < keys->mat.rows; i++)
+//     {
+//         for (size_t j = 0; j < cipher->e.size; j++)
+//         {
+//             if (keys->row_to_attrib[i] == cipher->gamma[j])
+//             {
+//                 positions[i] = j;
+//                 break;
+//             }
+//         }
+//     }
+
+//     FP12_BN254_copy(res, &(cipher->e0));
+//     FP12_BN254 pair;
+//     FP12_BN254 pair_pow;
+//     FP12_BN254 pair_pow_inv;
+
+//     BIG_256_56 alpha_i;
+//     for (size_t i = 0; i < keys->mat.rows; i++)
+//     {
+//         PAIR_BN254_ate(&pair, &(cipher->e.vec[positions[i]]), &(keys->d.vec[i]));
+//         PAIR_BN254_fexp(&pair);
+//         BIG_256_56_from_mpz(alpha_i, alpha.vec[i]);
+//         FP12_BN254_pow(&pair_pow, &pair, alpha_i);
+//         FP12_BN254_inv(&pair_pow_inv, &pair_pow);
+//         FP12_BN254_mul(res, &pair_pow_inv);
+//     }
+
+//     cfe_vec_free(&alpha);
+//     free(positions);
+
+//     return CFE_ERR_NONE;
+// }
 
 void cfe_gpsw_free(cfe_gpsw *gpsw)
 {
