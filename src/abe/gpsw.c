@@ -145,7 +145,7 @@ size_t cfe_gpsw_cipher_text_size(size_t num_attributes)
 
 size_t cfe_gpsw_delegate_keys_size(cfe_gpsw_keys *keys)
 {
-    printf("Keys: Rows: %ld, Cols: %ld, d size: %ld \n", keys->mat.rows, keys->mat.cols, keys->d.size);
+    // printf("Keys: Rows: %ld, Cols: %ld, d size: %ld \n", keys->mat.rows, keys->mat.cols, keys->d.size);
     return
         // size of row_to_attrib
         keys->mat.rows * sizeof(int) +
@@ -328,12 +328,12 @@ cfe_error cfe_gpsw_decrypt(FP12_BN254 *res, cfe_gpsw_cipher *cipher, cfe_gpsw_ke
     cfe_mat_transpose(&mat_transpose, &(keys->mat));
     cfe_error check = cfe_gaussian_elimination_solver(&alpha, &mat_transpose, &one_vec, gpsw->p);
 
-    printf("    Alpha: (check = %d)", check);
-    for (size_t i = 0; i < alpha.size; i++)
-    {
-        gmp_printf(" %Zd ", alpha.vec[i]);
-    }
-    printf("\n");
+    // printf("    Alpha: (check = %d)", check);
+    // for (size_t i = 0; i < alpha.size; i++)
+    // {
+    //     gmp_printf(" %Zd ", alpha.vec[i]);
+    // }
+    // printf("\n");
 
     cfe_mat_free(&mat_transpose);
     cfe_vec_free(&one_vec);

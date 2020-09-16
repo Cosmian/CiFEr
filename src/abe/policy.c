@@ -85,7 +85,7 @@ cfe_error cfe_boolean_to_msp(cfe_msp *msp, char *bool_exp,
         cfe_mat_mul(&(msp->mat), &msp_mat, &inv_mat);
         cfe_mat_frees(&msp_mat, &inv_mat, NULL);
     }
-    printf("FINAL MATRIX\n");
+    printf("MSP: \n");
     print_msp(msp);
 cleanup:
     cfe_vec_free(&vec);
@@ -102,21 +102,21 @@ cfe_error cfe_boolean_to_msp_iterative(cfe_msp *msp, cfe_string *bool_exp, cfe_v
     cfe_vec vec1, vec2;
     bool found = false;
 
-    printf("PROCESSING :%s\n", bool_exp->str);
+    // printf("PROCESSING :%s\n", bool_exp->str);
 
     for (size_t i = 0; i < bool_exp->str_len; i++)
     {
         // a bracket was opened
         if (bool_exp->str[i] == '(')
         {
-            printf("  -> ( \n");
+            // printf("  -> ( \n");
             num_brc++;
             continue;
         }
         // a bracket was closed
         if (bool_exp->str[i] == ')')
         {
-            printf("  -> ) \n");
+            // printf("  -> ) \n");
             num_brc--;
             continue;
         }
@@ -124,7 +124,7 @@ cfe_error cfe_boolean_to_msp_iterative(cfe_msp *msp, cfe_string *bool_exp, cfe_v
         if (num_brc == 0 && i < bool_exp->str_len - 3 && bool_exp->str[i] == 'A' &&
             bool_exp->str[i + 1] == 'N' && bool_exp->str[i + 2] == 'D')
         {
-            printf("  -> detected AND \n");
+            // printf("  -> detected AND \n");
             // recover left part in bool_exp1
             cfe_substring(&bool_exp1, bool_exp, 0, i);
             cfe_init_set_vecs_and(&vec1, &vec2, vec, c);
@@ -153,7 +153,7 @@ cfe_error cfe_boolean_to_msp_iterative(cfe_msp *msp, cfe_string *bool_exp, cfe_v
         if (num_brc == 0 && i < bool_exp->str_len - 2 && bool_exp->str[i] == 'O' &&
             bool_exp->str[i + 1] == 'R')
         {
-            printf("  -> detected OR \n");
+            // printf("  -> detected OR \n");
             cfe_substring(&bool_exp1, bool_exp, 0, i);
             err = cfe_boolean_to_msp_iterative(&msp1, &bool_exp1, vec, c);
             cfe_string_free(&bool_exp1);
@@ -175,10 +175,10 @@ cfe_error cfe_boolean_to_msp_iterative(cfe_msp *msp, cfe_string *bool_exp, cfe_v
     }
     if (found == false)
     {
-        printf("  -> Attribute or (exp): ");
+        // printf("  -> Attribute or (exp): ");
         if (bool_exp->str[0] == '(' && bool_exp->str[bool_exp->str_len - 1] == ')')
         {
-            printf("  ==> process content inside brackets \n");
+            // printf("  ==> process content inside brackets \n");
             cfe_substring(&bool_exp1, bool_exp, 1, bool_exp->str_len - 1);
             err = cfe_boolean_to_msp_iterative(msp, &bool_exp1, vec, c);
             cfe_string_free(&bool_exp1);
@@ -186,7 +186,7 @@ cfe_error cfe_boolean_to_msp_iterative(cfe_msp *msp, cfe_string *bool_exp, cfe_v
         }
 
         int attrib = cfe_str_to_int(bool_exp);
-        printf("attribute: %d\n", attrib);
+        // printf("attribute: %d\n", attrib);
         if (attrib == -1)
         {
             return CFE_ERR_CORRUPTED_BOOL_EXPRESSION;
@@ -211,13 +211,11 @@ cfe_error cfe_boolean_to_msp_iterative(cfe_msp *msp, cfe_string *bool_exp, cfe_v
         msp->row_to_attrib = (int *)cfe_malloc(sizeof(int) * 1);
         msp->row_to_attrib[0] = attrib;
 
-        print_msp(msp);
-
         return CFE_ERR_NONE;
     }
     else
     {
-        printf("  --> found = true finish processing %s\n", bool_exp->str);
+        // printf("  --> found = true finish processing %s\n", bool_exp->str);
         msp->row_to_attrib = (int *)cfe_malloc(sizeof(int) * (msp1.mat.rows + msp2.mat.rows));
         cfe_mat_init(&(msp->mat), msp1.mat.rows + msp2.mat.rows, msp2.mat.cols);
         mpz_t tmp;
@@ -248,8 +246,6 @@ cfe_error cfe_boolean_to_msp_iterative(cfe_msp *msp, cfe_string *bool_exp, cfe_v
         mpz_clear(tmp);
         cfe_msp_free(&msp1);
         cfe_msp_free(&msp2);
-
-        print_msp(msp);
 
         return CFE_ERR_NONE;
     }
