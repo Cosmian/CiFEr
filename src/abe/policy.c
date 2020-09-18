@@ -25,7 +25,7 @@
 #include "cifer/abe/policy.h"
 #include "cifer/internal/str.h"
 
-void print_msp(cfe_msp *msp)
+void cfe_msp_print(cfe_msp *msp)
 {
     printf("   MSP   Matrix %ldx%ld\n", msp->mat.rows, msp->mat.cols);
     for (size_t i = 0; i < msp->mat.rows; i++)
@@ -85,8 +85,8 @@ cfe_error cfe_boolean_to_msp(cfe_msp *msp, char *bool_exp,
         cfe_mat_mul(&(msp->mat), &msp_mat, &inv_mat);
         cfe_mat_frees(&msp_mat, &inv_mat, NULL);
     }
-    printf("MSP: \n");
-    print_msp(msp);
+    // printf("MSP: \n");
+    // cfe_msp_print(msp);
 cleanup:
     cfe_vec_free(&vec);
     mpz_clears(one, zero, NULL);

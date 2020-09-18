@@ -113,6 +113,8 @@ void FP12_BN254_get_value(char *be_bytes, FP12_BN254 *fp12);
 size_t cfe_gpsw_cipher_text_size(size_t num_attributes);
 size_t cfe_gpsw_delegate_keys_size(cfe_gpsw_keys *keys);
 
+void cfe_gpsw_print_msp(cfe_msp *msp);
+
 //////////////////////////////////////////////////
 
 /**
@@ -220,9 +222,10 @@ void cfe_gpsw_keys_init(cfe_gpsw_keys *keys, cfe_msp *msp, int *attrib, size_t n
  * @param attrib A pointer to an array of integers defining which attributes are
  * owned to join corresponding keys to the final key for the decryption
  * @param num_attrib The length of attrib
+ * @return Error code if keys cannot be generated (added by BG)
  */
-void cfe_gpsw_delegate_keys(cfe_gpsw_keys *keys, cfe_vec_G1 *policy_keys,
-                            cfe_msp *msp, int *attrib, size_t num_attrib);
+cfe_error cfe_gpsw_delegate_keys(cfe_gpsw_keys *keys, cfe_vec_G1 *policy_keys,
+                                 cfe_msp *msp, int *attrib, size_t num_attrib);
 
 // TODO: change decryption to be a string when mapping is defined
 /**

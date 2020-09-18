@@ -18,6 +18,7 @@
 #include <string.h>
 #include <amcl/big_256_56.h>
 #include <amcl/pair_BN254.h>
+#include <stdio.h>
 
 #include "cifer/internal/common.h"
 #include "cifer/internal/big.h"
@@ -156,6 +157,11 @@ size_t cfe_gpsw_delegate_keys_size(cfe_gpsw_keys *keys)
             keys->mat.rows * sizeof(mpz_t);
 }
 
+void cfe_gpsw_print_msp(cfe_msp *msp)
+{
+    cfe_msp_print(msp);
+}
+
 //////////////////////////////////////////////////
 
 void cfe_gpsw_init(cfe_gpsw *gpsw, size_t l)
@@ -287,9 +293,28 @@ void cfe_gpsw_keys_init(cfe_gpsw_keys *keys, cfe_msp *msp, int *attrib, size_t n
     keys->row_to_attrib = (int *)cfe_malloc(sizeof(int) * count_attrib);
 }
 
-void cfe_gpsw_delegate_keys(cfe_gpsw_keys *keys, cfe_vec_G1 *policy_keys,
-                            cfe_msp *msp, int *attrib, size_t num_attrib)
+cfe_error cfe_gpsw_delegate_keys(cfe_gpsw_keys *keys, cfe_vec_G1 *policy_keys,
+                                 cfe_msp *msp, int *attrib, size_t num_attrib)
 {
+    // BGR: check that all requested attributes are known in the MSP
+    for (size_t j = 0; j < num_attrib; j++)
+    {
+        int att = attrib[j];
+        bool found = false;
+        for (size_t i = 0; i < msp->mat.rows; i++)
+        {
+            if (msp->row_to_attrib[i] == att)
+            {
+                found = true;
+                break;
+            }
+        }
+        if (!found)
+        {
+            return CFE_ERR_NO_SOLUTION_EXISTS;
+        }
+    }
+
     size_t count_attrib = 0;
     size_t *positions = (size_t *)cfe_malloc(sizeof(size_t) * keys->mat.rows);
 
@@ -314,6 +339,7 @@ void cfe_gpsw_delegate_keys(cfe_gpsw_keys *keys, cfe_vec_G1 *policy_keys,
     }
 
     free(positions);
+    return CFE_ERR_NONE;
 }
 
 cfe_error cfe_gpsw_decrypt(FP12_BN254 *res, cfe_gpsw_cipher *cipher, cfe_gpsw_keys *keys, cfe_gpsw *gpsw)

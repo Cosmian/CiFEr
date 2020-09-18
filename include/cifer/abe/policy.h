@@ -31,7 +31,6 @@
  * \brief Functions for policy conversion needed for ABE schemes.
  */
 
-
 /**
  * cfe_msp represents a monotone span program (MSP) describing a policy defining which
  * attributes are needed to decrypt the ciphertext. It includes a matrix
@@ -40,8 +39,9 @@
  * rows of the matrix mapped to an element of A span the vector [1, 0,..., 0] (or
  * vector [1, 1,..., 1] depending on the use case).
  */
-typedef struct cfe_msp {
-    cfe_mat mat; /** A matrix representing the policy */
+typedef struct cfe_msp
+{
+    cfe_mat mat;        /** A matrix representing the policy */
     int *row_to_attrib; /** Mapping from the rows of the matrix to attributes */
 } cfe_msp;
 
@@ -86,5 +86,12 @@ void cfe_init_set_vecs_and(cfe_vec *vec1, cfe_vec *vec2, cfe_vec *vec, size_t c)
  * struct)
  */
 void cfe_msp_free(cfe_msp *msp);
+
+////////////////////////////////::
+/**
+ * Print an MSP to the console
+ **/
+void cfe_msp_print(cfe_msp *msp);
+////////////////////////////////::
 
 #endif
