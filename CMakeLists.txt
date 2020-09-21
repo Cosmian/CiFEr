@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.11)
+cmake_minimum_required(VERSION 3.10)
 project(cifer C)
 
 # C compiler settings
@@ -117,6 +117,6 @@ add_executable(cifer_test ${binary_SOURCES})
 
 target_link_libraries(cifer_test PRIVATE cifer)
 
-add_custom_target(test COMMAND cifer_test VERBATIM)
+add_custom_target(run_test COMMAND cifer_test VERBATIM)
 
 add_custom_target(docs COMMAND doxygen WORKING_DIRECTORY .. VERBATIM)
