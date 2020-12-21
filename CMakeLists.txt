@@ -136,3 +136,7 @@ target_link_libraries(cifer_test PRIVATE cifer)
 add_custom_target(run_test COMMAND cifer_test VERBATIM)
 
 add_custom_target(docs COMMAND doxygen WORKING_DIRECTORY .. VERBATIM)
+
+# App
+add_executable(cifer_gen app/gen.c external/munit/munit.c)
+target_link_libraries(cifer_gen PRIVATE cifer sodium)
